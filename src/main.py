@@ -36,7 +36,7 @@ def data_visualize(data):
 
 
 class ParticleFilter:
-    def __init__(self, time=400, v_size=30, s_size=40, sampling_size=10000):
+    def __init__(self, time=400, v_size=30, s_size=40, sampling_size=1000):
         self.time = time
         self.v_size = v_size
         self.s_size = s_size
@@ -50,28 +50,33 @@ class ParticleFilter:
         self.w = w/np.sum(w)
 
     def predict(self):
-        self.x = self.x + np.random.normal(loc=0, scale=2)
+        self.x = self.x + np.random.normal(loc=0, scale=3, size=(self.sample_size, 2))
         self.x = np.round(self.x)
 
     def update_weight(self, observe):
         base_p = np.sum(observe)/(self.v_size*self.s_size)
+        memory = dict()
         for i in range(self.sample_size):
             v, s = int(self.x[i][0]), int(self.x[i][1])
-            n = 0
-            p = 0
-            for mv, ms in itertools.permutations([-2, -1, 0, 1, 2], 2):
-                if 0 <= v+mv < self.v_size and 0 <= s+ms < self.s_size:
-                    n += 1
-                    if observe[v+mv][s+ms] == 1:
-                        p += 1
-            p /= n if n != 0 else 1
+            if (v, s) in memory.keys():
+                p = memory[(v, s)]
+            else:
+                n = 0
+                p = 0
+                for mv, ms in itertools.permutations([-2, -1, 0, 1, 2], 2):
+                    if 0 <= v+mv < self.v_size and 0 <= s+ms < self.s_size:
+                        n += 1
+                        if observe[v+mv][s+ms] == 1:
+                            p += 1
+                p /= n if n != 0 else 1
+                memory[(v, s)] = p
             self.w[i] *= p/base_p
 
     def resampling_x(self):
         print(np.sum(self.w))
         self.w = self.w / np.sum(self.w)
 
-        while min(self.w) < 1/(self.sample_size*500):
+        while min(self.w) < 1/(self.sample_size*1000):
             min_index = np.argmin(self.w)
             max_index = np.argmax(self.w)
             self.x[min_index] = self.x[max_index]
@@ -98,17 +103,23 @@ if __name__ == '__main__':
 
     fig = plt.figure()
     ims = []
+    ax1 = plt.subplot(1,2,1)
+    ax2 = plt.subplot(1,2,2)
+    ax1.set_title('data')
+    ax2.set_title('estimation')
 
-    pf = ParticleFilter()
+    pf = ParticleFilter(sampling_size=100000)
     for t in range(400):
+        print('t =', t)
         pf.resampling_x()
         pf.predict()
         pf.update_weight(data[t])
         heatmap = pf.make_map()
-        ims.append([plt.imshow(heatmap)])
+        title = fig.text(0.48, 0.8, 't = {}'.format(t), fontsize='large')
+        ims.append([ax1.imshow(data[t]), ax2.imshow(heatmap), title])
         # plt.imshow(heatmap)
         # plt.show()
     print('end')
     ani = animation.ArtistAnimation(fig, ims, interval=100)
-    ani.save('reuslt.gif', writer="imagemagick")
+    ani.save('result_{}.gif'.format(pf.sample_size), writer="imagemagick")
 
