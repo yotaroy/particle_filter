@@ -97,7 +97,7 @@ if __name__ == '__main__':
     ax1.set_title('data')
     ax2.set_title('estimation')
 
-    pf = ParticleFilter(particle_num=1000)
+    pf = ParticleFilter(particle_num=10000)
     for t in range(400):
         print('t =', t)
         pf.resampling_x()

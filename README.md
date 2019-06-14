@@ -6,7 +6,7 @@
 ```
 $ python src/object_tracking.py
 ```
-出力は[result/result_1000.gif](./result/result_1000.gif)
+出力は[result/result_10000.gif](./result/result_10000.gif)
 
 ### 入力データの視覚化をするプログラム
 ```
@@ -23,4 +23,4 @@ $ python src/data_visualize.py
 
 ## 入力データ
 入力データは[DataForPF/txt](./DataForPF/txt)にあるテキストデータ400個．データ1つは30*40のバイナリーで，1が物体を表すが，ノイズによって0,1が反転している．ノイズの乗り方は時間変化する．また，時々データのほとんどが1になる．  
-これを視覚化したものが[result/data.git](result/data.gif)．
+これを視覚化したものが[result/data.gif](result/data.gif)．
