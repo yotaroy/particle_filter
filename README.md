@@ -21,6 +21,9 @@ $ python src/data_visualize.py
 - [パーティクル数100000の結果](./result/result_100000.gif)
 - [入力データのGIF](result/data.gif)
 
+出力例
+![パーティクル数100000の結果](./result/result_100000.gif, "出力例")
+
 ## 入力データ
 入力データは[DataForPF/txt](./DataForPF/txt)にあるテキストデータ400個．データ1つは30*40のバイナリーで，1が物体を表すが，ノイズによって0,1が反転している．ノイズの乗り方は時間変化する．また，時々データのほとんどが1になる．  
 これを視覚化したものが[result/data.gif](result/data.gif)．
